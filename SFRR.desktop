@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Sonic Free Riders Recomp
+Comment=Recomp of Sonic Free Riders with Linux controller support
+Exec=SFRR-launcher.sh
+Path=usr/bin/
+Icon=SFRR
+Type=Application
+Categories=Game;Emulator;
+Terminal=false
