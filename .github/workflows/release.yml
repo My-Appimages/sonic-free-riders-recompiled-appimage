@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zakuro-appimage
-          path: Sonic-Free-Riders-Recompiled-x86_64.AppImage.AppImage
+          path: Sonic-Free-Riders-Recompiled-x86_64.AppImage
           if-no-files-found: error
 
   release:
