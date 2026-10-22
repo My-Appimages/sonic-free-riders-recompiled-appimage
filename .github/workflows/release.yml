@@ -21,8 +21,10 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          sudo apt update
-          sudo apt-get install -y libfuse2
+          sudo apt-get update
+          sudo apt-get install -y \
+            libfuse2 \
+            libsdl2-2.0-0
 
       - name: Download and Setup LinuxDeploy
         run: |
