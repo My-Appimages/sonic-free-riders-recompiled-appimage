@@ -29,6 +29,7 @@ prepare_binary() {
 
   local api_url="https://api.github.com/repos/YuutaTsubasa/Free-Riders-Recompiled/releases/latest"
   local asset_url
+  local extracted_dir
 
   asset_url="$(
     curl -fsSL "$api_url" |
@@ -46,10 +47,28 @@ prepare_binary() {
   )"
 
   curl -fL --retry 3 "$asset_url" -o "$archive"
-  tar -xzf "$archive"
-  mv ${release_name} build
-  cp SFRR-launcher.sh build
-  chmod +x "$executable_path"
+
+  # Inspect the archive before extracting it.
+  tar -tzf "$archive" | head -n 30
+
+  mkdir -p build
+  tar -xzf "$archive" -C build
+
+  # Find the actual extracted directory instead of assuming its name.
+  extracted_dir="$(find build -type f -name FreeRidersRecompiled -printf '%h\n' | head -n 1)"
+
+  if [[ -z "$extracted_dir" ]]; then
+    echo "ERROR: Could not find FreeRidersRecompiled in the extracted archive." >&2
+    find build -maxdepth 3 -print
+    return 1
+  fi
+
+  echo "Found game directory: $extracted_dir"
+
+  # Keep all files shipped with the game.
+  cp -a "$extracted_dir"/. build/
+  cp SFRR-launcher.sh build/
+  chmod +x build/FreeRidersRecompiled build/SFRR-launcher.sh
 }
 
 
