@@ -25,15 +25,27 @@ find_library() {
 }
 
 prepare_binary() {
-  echo "Downloading Linux binary..."
+  echo "Downloading latest Linux x86-64 binary..."
 
-  local url
-  url="$(curl -fsSL \
-    https://api.github.com/repos/YuutaTsubasa/Free-Riders-Recompiled/releases/latest |
-    jq -er --arg name "${release_name}.tar.gz" \
-      '.assets[] | select(.name == $name) | .browser_download_url')"
+  local api_url="https://api.github.com/repos/YuutaTsubasa/Free-Riders-Recompiled/releases/latest"
+  local asset_url
 
-  curl -fL "$url" -o "$archive"
+  asset_url="$(
+    curl -fsSL "$api_url" |
+      jq -er '
+        [
+          .assets[]
+          | select(.name | test("linux-x64\\.tar\\.gz$"; "i"))
+        ]
+        | if length == 1 then
+            .[0].browser_download_url
+          else
+            error("Expected exactly one Linux x64 tar.gz asset")
+          end
+      '
+  )"
+
+  curl -fL --retry 3 "$asset_url" -o "$archive"
   tar -xzf "$archive"
   mv ${release_name} build
   cp SFRR-launcher.sh build
